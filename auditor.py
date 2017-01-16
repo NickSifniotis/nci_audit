@@ -49,6 +49,9 @@ def _scanStorage(currentShelf):
 knownItems = KnownItems("data/parts_list.csv")
 
 
+knownItems.SaveData("data/parts_list.csv")
+exit(0)
+
 with open("data/racks.txt", "r") as inputFile:
     dataLines = inputFile.readlines()
 
@@ -112,7 +115,7 @@ while not done:
         else:
             print ("Unable to scan blades, no shelf created.")
     elif instruction == "4":
-        # scan some blade servers
+        # scan some storage units
         if currentShelf is not None:
             _scanStorage(currentShelf)
         else:

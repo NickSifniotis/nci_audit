@@ -24,13 +24,11 @@ class Shelf:
         res = []
         res.append("Shelf")
         res.append("Storage Units:")
-        res.append(str(self._storage))
-        # for storage in self._storage:
-        #     res.append(str(storage))
+        for storage in self._storage:
+            res.append(str(storage))
         res.append("Blades:")
-        res.append(str(self._blades))
-        # for blade in self._blades:
-        #     res.append(str(blade))
+        for blade in self._blades:
+            res.append(str(blade))
         return "\n".join(res)
 
 
@@ -81,10 +79,13 @@ class Shelf:
         """
         item = self._knownItems.Item(serialNumber)
         if item is None:
+            modelNumber = input("Model not matched, enter model number: ")
             item = Item()
             item.SetSerialNumber(serialNumber)
-            item.SetModelNumber("Temporary holding until the code is written to collect this.")
+            item.SetModelNumber(modelNumber)
             self._knownItems.AddItem(item)
+        else:
+            print (serialNumber + " matched.")
 
         item.FindItem()
         dataSet.add(item)
