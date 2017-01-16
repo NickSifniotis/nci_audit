@@ -135,6 +135,6 @@ class Rack:
         :return:
         """
         fileHandle.write("RACK\n")
-        fileHandle.write("name:" + self._name + "\n")
+        fileHandle.write("NAME:" + self._name + "\n")
         for shelf in self._shelves:
             shelf.SaveShelf(fileHandle)

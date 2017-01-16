@@ -4,7 +4,13 @@ from rack import Rack
 from knownitems import KnownItems
 
 
-unfoundNumbers = []
+def _displayCommands():
+    print("Commands:")
+    print("0: Quit")
+    print("1. New Rack")
+    print("2. New Shelf")
+    print("3. Scan blades")
+    print("4. Scan storage")
 
 
 def _splitOnInterval(interval, string):
@@ -20,35 +26,101 @@ def _splitOnInterval(interval, string):
     return results
 
 
+def _scanBlades(currentShelf):
+    finished = False
+    while not finished:
+        serialNumber = input().strip()
+        if serialNumber == "0":
+            finished = True
+        else:
+            currentShelf.AddBlade(serialNumber)
+
+
+def _scanStorage(currentShelf):
+    finished = False
+    while not finished:
+        serialNumber = input().strip()
+        if serialNumber == "0":
+            finished = True
+        else:
+            currentShelf.AddStorage(serialNumber)
+
+
 knownItems = KnownItems("data/parts_list.csv")
 
 
-with open("data/data.txt", "r") as inputFile:
+with open("data/racks.txt", "r") as inputFile:
     dataLines = inputFile.readlines()
 
 racks = []
-position = 0
-while position < len(dataLines):
-    rack = Rack(dataLines[position].strip(), knownItems)
-    position += 1
+currentRack = None
+currentShelf = None
+state = 0
+for line in dataLines:
+    lineParts = line.strip().split(":")
+    command = lineParts[0]
 
-    for shelves in range(0, 4):
-        shelf = rack.CreateNewShelf()
+    if command == "RACK":
+        if currentRack is not None:
+            racks.append(currentRack)
+        state = 1
 
-        numbers = _splitOnInterval(18, dataLines[position].strip())
-        position += 1
-        for item in numbers:
-            shelf.AddStorage(item)
+    elif command == "NAME" or command == "name":
+        if state is 1:
+            name = lineParts[1]
+            currentRack = Rack(name, knownItems)
+            state = 2
+        else:
+            raise Exception("Bad state in rack load function.")
 
-        numbers = _splitOnInterval(10, dataLines[position].strip())
-        position += 1
-        for item in numbers:
-            shelf.AddBlade(item)
+    elif command == "SHELF":
+        currentShelf = currentRack.CreateNewShelf()
 
-    racks.append(rack)
+    elif command == "STORAGE":
+        for serialNumber in lineParts[1:]:
+            currentShelf.AddStorage(serialNumber)
 
-for rack in racks:
-    print(str(rack))
+    elif command == "BLADE":
+        for serialNumber in lineParts[1:]:
+            currentShelf.AddBlade(serialNumber)
+
+
+done = False
+currentRack = None
+currentShelf = None
+while not done:
+    _displayCommands()
+    instruction = input("Next command:").strip()
+
+    if instruction == "0":
+        done = True
+    elif instruction == "1":
+        # create a new rack
+        rackName = input("New rack name: ")
+        currentRack = Rack(rackName, knownItems)
+        racks.append(currentRack)
+    elif instruction == "2":
+        # create a new shelf for an existing rack
+        if currentRack is not None:
+            currentShelf = currentRack.CreateNewShelf()
+        else:
+            print("No rack selected.")
+    elif instruction == "3":
+        # scan some blade servers
+        if currentShelf is not None:
+            _scanBlades(currentShelf)
+        else:
+            print ("Unable to scan blades, no shelf created.")
+    elif instruction == "4":
+        # scan some blade servers
+        if currentShelf is not None:
+            _scanStorage(currentShelf)
+        else:
+            print ("Unable to scan storage, no shelf created.")
+    else:
+        print("Unrecognised command.")
+
+
 
 knownItems.SaveData("data/parts_list.csv")
 
