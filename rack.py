@@ -1,7 +1,7 @@
 __author__ = 'nsifniotis'
 
 from item import Item
-from knownitems import KnownItems
+import os
 
 
 class Shelf:
@@ -40,7 +40,8 @@ class Shelf:
         :param serialNumber: The serian number that has been read from the input device.
         :return: Nothing.
         """
-        self._addItem(serialNumber, self._blades)
+        if serialNumber != "":
+            self._addItem(serialNumber, self._blades)
 
 
     def AddStorage(self, serialNumber):
@@ -50,7 +51,8 @@ class Shelf:
         :param serialNumber: The serial number that has been read from the input device.
         :return: Nothing
         """
-        self._addItem(serialNumber, self._storage)
+        if serialNumber != "":
+            self._addItem(serialNumber, self._storage)
 
 
     def SaveShelf(self, fileHandle):
@@ -79,6 +81,7 @@ class Shelf:
         """
         item = self._knownItems.Item(serialNumber)
         if item is None:
+            os.system ("play blip.wav > /dev/null 2>&1")
             modelNumber = input("Model not matched, enter model number: ")
             item = Item()
             item.SetSerialNumber(serialNumber)

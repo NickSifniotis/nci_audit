@@ -19,7 +19,9 @@ class KnownItems:
                 item.SetSerialNumber(self._dequote(line[0].strip()))
                 if line[1].strip() == "found":
                     item.FindItem()
-                modelNumber = ",".join(line[2:]).strip()
+                if line[2].strip() == "original":
+                    item.IsOriginal()
+                modelNumber = ",".join(line[3:]).strip()
                 item.SetModelNumber(modelNumber)
 
                 self._parts[line[0]] = item
@@ -64,6 +66,8 @@ class KnownItems:
                 item = self._parts[key]
                 outputFile.write(item.SerialNumber() + ",")
                 outputFile.write("found" if item.Found() else "not found")
+                outputFile.write(",")
+                outputFile.write("original" if item.Original() else "not original")
                 outputFile.write("," + item.ModelNumber())
                 outputFile.write("\n")
 

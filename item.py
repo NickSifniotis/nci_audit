@@ -11,6 +11,7 @@ class Item:
         self._serialNumber = ""
         self._modelNumber = ""
         self._found = False
+        self._original = False
 
 
     def __repr__(self):
@@ -32,6 +33,10 @@ class Item:
         return self._found
 
 
+    def Original(self):
+        return self._original
+
+
     def SetSerialNumber(self, serialNumber):
         self._serialNumber = serialNumber
 
@@ -42,3 +47,7 @@ class Item:
 
     def FindItem(self):
         self._found = True
+
+
+    def IsOriginal(self):
+        self._original = True

@@ -5,6 +5,7 @@ from knownitems import KnownItems
 
 
 def _displayCommands():
+    print ("\n")
     print("Commands:")
     print("0: Quit")
     print("1. New Rack")
@@ -48,10 +49,6 @@ def _scanStorage(currentShelf):
 
 knownItems = KnownItems("data/parts_list.csv")
 
-
-knownItems.SaveData("data/parts_list.csv")
-exit(0)
-
 with open("data/racks.txt", "r") as inputFile:
     dataLines = inputFile.readlines()
 
@@ -68,7 +65,7 @@ for line in dataLines:
             racks.append(currentRack)
         state = 1
 
-    elif command == "NAME" or command == "name":
+    elif command == "NAME":
         if state is 1:
             name = lineParts[1]
             currentRack = Rack(name, knownItems)
@@ -87,6 +84,8 @@ for line in dataLines:
         for serialNumber in lineParts[1:]:
             currentShelf.AddBlade(serialNumber)
 
+if currentRack is not None:
+    racks.append(currentRack)
 
 done = False
 currentRack = None
@@ -122,7 +121,6 @@ while not done:
             print ("Unable to scan storage, no shelf created.")
     else:
         print("Unrecognised command.")
-
 
 
 knownItems.SaveData("data/parts_list.csv")
