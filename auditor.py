@@ -51,3 +51,7 @@ for rack in racks:
     print(str(rack))
 
 knownItems.SaveData("data/parts_list.csv")
+
+with open("data/racks.txt", "w") as outputFile:
+    for rack in racks:
+        rack.SaveRack(outputFile)

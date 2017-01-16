@@ -16,8 +16,8 @@ class KnownItems:
             csvParser = csv.reader(inputFile)
             for line in csvParser:
                 item = Item()
-                item.SetSerialNumber(self._dequote(line[0]))
-                item.SetModelNumber(self._dequote(line[1]))
+                item.SetSerialNumber(self._dequote(line[0].strip()))
+                item.SetModelNumber(self._dequote(line[1].strip()))
                 if line[2] == "found":
                     item.FindItem()
 
@@ -61,8 +61,8 @@ class KnownItems:
         with open(fileName, "w") as outputFile:
             for key in self._parts:
                 item = self._parts[key]
-                outputFile.write(item.SerialNumber() + ", \"")
-                outputFile.write(item.ModelNumber() + "\", ")
+                outputFile.write(item.SerialNumber() + ",\"")
+                outputFile.write(item.ModelNumber() + "\",")
                 outputFile.write("found" if item.Found() else "not found")
                 outputFile.write("\n")
 

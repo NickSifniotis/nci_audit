@@ -55,6 +55,21 @@ class Shelf:
         self._addItem(serialNumber, self._storage)
 
 
+    def SaveShelf(self, fileHandle):
+        """
+        Saves this shelf to disk.
+
+        :param fileHandle:
+        :return:
+        """
+        storageString = ":".join(s.SerialNumber() for s in self._storage)
+        bladeString = ":".join(s.SerialNumber() for s in self._blades)
+
+        fileHandle.write("SHELF\n")
+        fileHandle.write("STORAGE:" + storageString + "\n")
+        fileHandle.write("BLADE:" + bladeString + "\n")
+
+
     def _addItem(self, serialNumber, dataSet):
         """
         Adds an item to the given dataset. If not found, prompts the user for the model number
@@ -110,3 +125,16 @@ class Rack:
         shelf = Shelf(self._knownItems)
         self._shelves.append(shelf)
         return shelf
+
+
+    def SaveRack(self, fileHandle):
+        """
+        Saves the data stored in this rack to the filehandle provided.
+
+        :param fileHandle: The file to save the data into.
+        :return:
+        """
+        fileHandle.write("RACK\n")
+        fileHandle.write("name:" + self._name + "\n")
+        for shelf in self._shelves:
+            shelf.SaveShelf(fileHandle)
