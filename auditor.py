@@ -1,8 +1,11 @@
 __author__ = 'nsifniotis'
 
-import csv
+from rack import Rack
+from knownitems import KnownItems
+
 
 unfoundNumbers = []
+
 
 def _splitOnInterval(interval, string):
     if string == "":
@@ -16,46 +19,35 @@ def _splitOnInterval(interval, string):
 
     return results
 
-def _insertNumber(serialNumber, data):
-    global unfoundNumbers
-    if serialNumber in data:
-        desc, value = data[serialNumber]
-        data[serialNumber] = (desc, True)
-    else:
-        unfoundNumbers.append(number)
+
+knownItems = KnownItems("data/parts_list.csv")
 
 
 with open("data/data.txt", "r") as inputFile:
     dataLines = inputFile.readlines()
 
-with open("data/parts_list.csv", "r") as inputFile:
-    csvParser = csv.reader(inputFile)
+racks = []
+position = 0
+while position < len(dataLines):
+    rack = Rack(dataLines[position].strip(), knownItems)
+    position += 1
 
-    parts = dict()
-    for line in csvParser:
-        serial = line[0]
-        desc = line[1]
-        found = False
-        parts[serial] = (desc, found)
+    for shelves in range(0, 4):
+        shelf = rack.CreateNewShelf()
 
-state = 0
-for line in dataLines:
-    numbers = []
-    if state == 0:
-        numbers = _splitOnInterval(18, line.strip())
-        state = 1
-    elif state == 1:
-        numbers = _splitOnInterval(10, line.strip())
-        state = 0
+        numbers = _splitOnInterval(18, dataLines[position].strip())
+        position += 1
+        for item in numbers:
+            shelf.AddStorage(item)
 
-    for number in numbers:
-        _insertNumber(number[-10:], parts)
+        numbers = _splitOnInterval(10, dataLines[position].strip())
+        position += 1
+        for item in numbers:
+            shelf.AddBlade(item)
 
-with open("parts_list_out.csv", "w") as outputFile:
-    for key in parts:
-        desc, value = parts[key]
-        outputFile.write(key + ", \"" + desc + "\", " + ("Found" if value is True else "") + "\n")
+    racks.append(rack)
 
-with open("unfound.txt", "w") as outputFile:
-    for line in unfoundNumbers:
-        outputFile.write(line + "\n")
+for rack in racks:
+    print(str(rack))
+
+knownItems.SaveData("data/parts_list.csv")
